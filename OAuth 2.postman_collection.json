@@ -1,0 +1,209 @@
+{
+	"info": {
+		"_postman_id": "a538e35a-0e59-4be3-a3bb-b045d304f122",
+		"name": "OAuth 2",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "8272024"
+	},
+	"item": [
+		{
+			"name": "OAuth 2 - Custom Grant Type",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/oauth2/token?grant_type=ropc&client_id=order-service&client_secret=order-secret&username=abbas&password=123456&scope=profile, openid",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"oauth2",
+						"token"
+					],
+					"query": [
+						{
+							"key": "grant_type",
+							"value": "ropc"
+						},
+						{
+							"key": "client_id",
+							"value": "order-service"
+						},
+						{
+							"key": "client_secret",
+							"value": "order-secret"
+						},
+						{
+							"key": "username",
+							"value": "abbas"
+						},
+						{
+							"key": "password",
+							"value": "123456"
+						},
+						{
+							"key": "scope",
+							"value": "profile, openid"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "OAuth2 - Authorize(PKCE)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/oauth2/authorize?client_id=order-service&response_type=code&scope=openid&redirect_uri=http://127.0.0.1:4200/login/oauth2/code/order_service&code_challenge=424At2iyzMAHQAGx8Ooun1gEJn6jnADJtMzLK1dC7Aw&code_challenge_method=S256",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"oauth2",
+						"authorize"
+					],
+					"query": [
+						{
+							"key": "client_id",
+							"value": "order-service"
+						},
+						{
+							"key": "response_type",
+							"value": "code"
+						},
+						{
+							"key": "scope",
+							"value": "openid"
+						},
+						{
+							"key": "redirect_uri",
+							"value": "http://127.0.0.1:4200/login/oauth2/code/order_service"
+						},
+						{
+							"key": "code_challenge",
+							"value": "424At2iyzMAHQAGx8Ooun1gEJn6jnADJtMzLK1dC7Aw"
+						},
+						{
+							"key": "code_challenge_method",
+							"value": "S256"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "OAuth 2 - Code Exchange",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/oauth2/token?grant_type=authorization_code&client_id=order-service&code=D3ah_crlk_UPJM4eCC4LVWxRYbLb9ar08n8DSbDxF6xKV0pc0betOUe70YK4-KYprT3PSm674l6HZszWrngKgl4zlzBv5SfKEQ1VPXbGhe--9JN8mtb6-C61mvkFBBcR&code_verifier=GyxnaWGIwEmo3y2PNz4UOFRi5IfiRr1OvSShhYQ1biqpjpCsfc1OX1mfuYvmHsPU8dAy4s-FF1ro_HbQIzqnHB4q1my7SBA_lDsboLIOi5yqBoD_mQr9_T_xdpCQ_Kfr&redirect_uri=http://127.0.0.1:4200/login/oauth2/code/product_service",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"oauth2",
+						"token"
+					],
+					"query": [
+						{
+							"key": "grant_type",
+							"value": "authorization_code"
+						},
+						{
+							"key": "client_id",
+							"value": "order-service"
+						},
+						{
+							"key": "code",
+							"value": "D3ah_crlk_UPJM4eCC4LVWxRYbLb9ar08n8DSbDxF6xKV0pc0betOUe70YK4-KYprT3PSm674l6HZszWrngKgl4zlzBv5SfKEQ1VPXbGhe--9JN8mtb6-C61mvkFBBcR"
+						},
+						{
+							"key": "code_verifier",
+							"value": "GyxnaWGIwEmo3y2PNz4UOFRi5IfiRr1OvSShhYQ1biqpjpCsfc1OX1mfuYvmHsPU8dAy4s-FF1ro_HbQIzqnHB4q1my7SBA_lDsboLIOi5yqBoD_mQr9_T_xdpCQ_Kfr"
+						},
+						{
+							"key": "redirect_uri",
+							"value": "http://127.0.0.1:4200/login/oauth2/code/product_service"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Oauth 2 - Resource Server",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJraWQiOiJmZjdiZGZkZi0zZDAwLTRhNzMtYjc2Ni03ZDNhMGFlYjIzMDYiLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJhYmJhcyIsImF1ZCI6Im9yZGVyLXNlcnZpY2UiLCJuYmYiOjE3MTMyODAyNDIsInNjb3BlIjpbInByb2ZpbGUiLCJvcGVuaWQiXSwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwIiwiZXhwIjoxNzEzMzY2NjQyLCJpYXQiOjE3MTMyODAyNDIsImF1dGhvcml0aWVzIjpbIlJPTEVfVXNlciJdfQ.FxZS6TMpesL5AjwokF5A0niTWQzHzbd6sCM3BpCHrguDnZCCAqyL07dGwgJdH1HZen23nXqM5-KXe7hxnSAJjwfxw8w93-7y8jCx_Ga3zN1Mb1gM6ca1NFir8Vc6nnds_qMlrFPC5eYtlh8F0kkySPODo5Z4PIa6tmH0TtqdF9Kmet95R6mTSx5y0U_yYgigYAi5Xvm2a9wIbjJ96YvsjuOazk7NhDDoUAnU-hX8nqXUuMOq5P7vjA3Kpv9_BBhgbu5gfsovIewjyrlzwnJID1RzCHykrCF9fo4MXICjvzj03zwmOgcTEGIrynB4ZCBiphwgONJLEdK1Z9souKfJwA",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8081/orders",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"orders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "OAuth2 - Client Credentials",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/oauth2/token?grant_type=client_credentials&client_id=order-service&client_secret=order-secret",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"oauth2",
+						"token"
+					],
+					"query": [
+						{
+							"key": "grant_type",
+							"value": "client_credentials"
+						},
+						{
+							"key": "client_id",
+							"value": "order-service"
+						},
+						{
+							"key": "client_secret",
+							"value": "order-secret"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
