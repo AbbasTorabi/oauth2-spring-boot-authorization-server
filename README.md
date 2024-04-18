@@ -19,7 +19,7 @@ Whether you're a beginner looking to grasp OAuth 2 concepts or an experienced de
 
 [Watch the playlist](https://youtube.com/playlist?list=PL9DW8wFSPVHnb53q-IwX5Eo5ifAppAqxv&si=miAdWx4Qkl5zGc-U)
 
-[<img src="https://github.com/AbbasTorabi/oauth2-spring-boot-authorization-server/assets/47711934/00853b67-0170-442b-ba0e-2812b0395f26">](https://youtube.com/playlist?list=PL9DW8wFSPVHnb53q-IwX5Eo5ifAppAqxv&si=miAdWx4Qkl5zGc-U)
+[<img src="https://github.com/AbbasTorabi/oauth2-spring-boot-authorization-server/assets/47711934/7d94443f-8385-40a0-a8d9-894210421c2b">](https://youtube.com/playlist?list=PL9DW8wFSPVHnb53q-IwX5Eo5ifAppAqxv&si=miAdWx4Qkl5zGc-U)
 
 ## Technical Description
 This repository contains two projects:
