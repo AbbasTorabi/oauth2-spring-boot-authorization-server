@@ -2,11 +2,13 @@ package com.example.oauth.config;
 
 import com.example.oauth.security.CustomGrantAuthenticationConverter;
 import com.example.oauth.security.CustomGrantAuthenticationProvider;
+import com.example.oauth.service.UserService;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -52,7 +54,10 @@ import java.util.stream.Collectors;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final UserService userService;
 
     @Bean
     @Order(1)
@@ -61,7 +66,7 @@ public class SecurityConfig {
         httpSecurity.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
                 .oidc(Customizer.withDefaults())
                 .tokenEndpoint(tokenEndpoint -> tokenEndpoint.accessTokenRequestConverter(new CustomGrantAuthenticationConverter())
-                        .authenticationProvider(new CustomGrantAuthenticationProvider(oAuth2AuthorizationService(), tokenGenerator(), userDetailsService(), passwordEncoder())));
+                        .authenticationProvider(new CustomGrantAuthenticationProvider(oAuth2AuthorizationService(), tokenGenerator(), userService, passwordEncoder())));
         httpSecurity.exceptionHandling(e -> e.authenticationEntryPoint(
                 new LoginUrlAuthenticationEntryPoint("/login")
         ));
@@ -78,20 +83,21 @@ public class SecurityConfig {
         return httpSecurity.build();
     }
 
-    @Bean
-    public UserDetailsService userDetailsService() {
-        var admin = User.withUsername("admin")
-                .password("123456")
-                .authorities("read", "write")
-                .roles("Admin")
-                .build();
-        var abbas = User.withUsername("abbas")
-                .password("123456")
-                .authorities("read")
-                .roles("User")
-                .build();
-        return new InMemoryUserDetailsManager(admin, abbas);
-    }
+    // Moved To DB
+//    @Bean
+//    public UserDetailsService userDetailsService() {
+//        var admin = User.withUsername("admin")
+//                .password("123456")
+//                .authorities("read", "write")
+//                .roles("Admin")
+//                .build();
+//        var abbas = User.withUsername("abbas")
+//                .password("123456")
+//                .authorities("read")
+//                .roles("User")
+//                .build();
+//        return new InMemoryUserDetailsManager(admin, abbas);
+//    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
