@@ -1,12 +1,11 @@
 package com.example.oauth.util;
 
-import com.example.oauth.entity.Role;
-import com.example.oauth.entity.User;
-import com.example.oauth.service.RoleService;
-import com.example.oauth.service.UserService;
+import com.example.oauth.entity.*;
+import com.example.oauth.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.stereotype.Component;
 
 import java.util.Set;
@@ -17,10 +16,14 @@ public class InitializeDefaultData implements ApplicationListener<ContextRefresh
 
     private final UserService userService;
     private final RoleService roleService;
+    private final GrantTypeService grantTypeService;
+    private final ScopeService scopeService;
+    private final ClientService clientService;
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
 
+        // region Create User
         Role superAdmin;
         Role contentAdmin;
 
@@ -34,7 +37,6 @@ public class InitializeDefaultData implements ApplicationListener<ContextRefresh
                             .build()
             );
 
-            roleService.create(superAdmin);
         }
 
         contentAdmin = roleService.findByName("ROLE_CONTENT_ADMIN");
@@ -47,14 +49,13 @@ public class InitializeDefaultData implements ApplicationListener<ContextRefresh
                             .build()
             );
 
-            roleService.create(contentAdmin);
         }
 
         User abbas = userService.findByMobile("091212345");
 
         if (abbas == null) {
 
-            User user = userService.create(
+            userService.create(
                     User.builder()
                             .name("Abbas")
                             .mobile("091212345")
@@ -63,8 +64,94 @@ public class InitializeDefaultData implements ApplicationListener<ContextRefresh
                             .build()
             );
 
-            userService.create(user);
         }
+
+        // endregion
+
+        // region Create Client
+        GrantType ropc;
+        GrantType authorizationCode;
+        GrantType clientCredentials;
+        Scope openid;
+        Scope profile;
+
+        ropc = grantTypeService.findByName("ropc");
+
+        if (ropc == null) {
+
+            ropc = grantTypeService.create(
+                    GrantType.builder()
+                            .name("ropc")
+                            .build()
+            );
+
+        }
+
+        authorizationCode = grantTypeService.findByName("authorization_code");
+
+        if (authorizationCode == null) {
+
+            authorizationCode = grantTypeService.create(
+                    GrantType.builder()
+                            .name("authorization_code")
+                            .build()
+            );
+
+        }
+
+        clientCredentials = grantTypeService.findByName("client_credentials");
+
+        if (clientCredentials == null) {
+
+            clientCredentials = grantTypeService.create(
+                    GrantType.builder()
+                            .name("client_credentials")
+                            .build()
+            );
+
+        }
+
+        openid = scopeService.findByName("openid");
+
+        if (openid == null) {
+
+            openid = scopeService.create(
+                    Scope.builder()
+                            .name("openid")
+                            .build()
+            );
+
+        }
+
+        profile = scopeService.findByName("profile");
+
+        if (profile == null) {
+
+            profile = scopeService.create(
+                    Scope.builder()
+                            .name("profile")
+                            .build()
+            );
+
+        }
+
+        Client orderService = clientService.getClientByClientId("order-service");
+
+        if (orderService == null) {
+
+            clientService.create(
+                    Client.builder()
+                            .clientId("order-service")
+                            .clientSecret("order-secret")
+                            .redirectUri("http://127.0.0.1:4200/login/oauth2/code/order_service")
+                            .requireProofKey(true)
+                            .authenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_POST)
+                            .scopes(Set.of(openid, profile))
+                            .grantTypes(Set.of(ropc, authorizationCode, clientCredentials))
+                            .build());
+        }
+
+        // endregion
 
     }
 

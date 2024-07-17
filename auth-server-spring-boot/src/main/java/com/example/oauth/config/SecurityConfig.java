@@ -15,6 +15,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -48,6 +49,7 @@ import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPublicKey;
 import java.time.Duration;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -104,30 +106,31 @@ public class SecurityConfig {
         return NoOpPasswordEncoder.getInstance();
     }
 
-    @Bean
-    public RegisteredClientRepository registeredClientRepository() {
-        var productService = RegisteredClient.withId(UUID.randomUUID().toString())
-                .clientId("order-service")
-                .clientSecret("order-secret")
-                .scope(OidcScopes.PROFILE)
-                .scope(OidcScopes.OPENID)
-                .redirectUri("http://127.0.0.1:4200/login/oauth2/code/order_service")
-                .clientAuthenticationMethod(ClientAuthenticationMethod.NONE)
-                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_POST)
-                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-                .authorizationGrantTypes(
-                        grantType -> {
-                            grantType.add(AuthorizationGrantType.CLIENT_CREDENTIALS);
-                            grantType.add(AuthorizationGrantType.AUTHORIZATION_CODE);
-                            grantType.add(AuthorizationGrantType.REFRESH_TOKEN);
-                            grantType.add(new AuthorizationGrantType("ropc"));
-                        }
-                )
-                .clientSettings(ClientSettings.builder().requireProofKey(true).build())
-                .tokenSettings(TokenSettings.builder().accessTokenTimeToLive(Duration.ofHours(24)).build()) // Customize Token settings
-                .build();
-        return new InMemoryRegisteredClientRepository(productService);
-    }
+    // Moved To DB
+//    @Bean
+//    public RegisteredClientRepository registeredClientRepository() {
+//        var productService = RegisteredClient.withId(UUID.randomUUID().toString())
+//                .clientId("order-service")
+//                .clientSecret("order-secret")
+//                .scope(OidcScopes.PROFILE)
+//                .scope(OidcScopes.OPENID)
+//                .redirectUri("http://127.0.0.1:4200/login/oauth2/code/order_service")
+//                .clientAuthenticationMethod(ClientAuthenticationMethod.NONE)
+//                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_POST)
+//                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+//                .authorizationGrantTypes(
+//                        grantType -> {
+//                            grantType.add(AuthorizationGrantType.CLIENT_CREDENTIALS);
+//                            grantType.add(AuthorizationGrantType.AUTHORIZATION_CODE);
+//                            grantType.add(AuthorizationGrantType.REFRESH_TOKEN);
+//                            grantType.add(new AuthorizationGrantType("ropc"));
+//                        }
+//                )
+//                .clientSettings(ClientSettings.builder().requireProofKey(true).build())
+//                .tokenSettings(TokenSettings.builder().accessTokenTimeToLive(Duration.ofHours(24)).build()) // Customize Token settings
+//                .build();
+//        return new InMemoryRegisteredClientRepository(productService);
+//    }
 
     @Bean
     public JWKSource<SecurityContext> jwkSource() {
@@ -172,9 +175,14 @@ public class SecurityConfig {
         return context -> {
             Authentication principal = context.getPrincipal();
             if (OAuth2TokenType.ACCESS_TOKEN.equals(context.getTokenType())) {
-                Set<String> authorities = principal.getAuthorities().stream().map(GrantedAuthority::getAuthority)
-                        .collect(Collectors.toSet());
-                context.getClaims().claim("authorities", authorities);
+                if (context.getAuthorizationGrantType().equals(AuthorizationGrantType.CLIENT_CREDENTIALS)) {
+                    Set<String> scopes = new HashSet<>(context.getRegisteredClient().getScopes());
+                    context.getClaims().claim("scopes", scopes);
+                } else {
+                    Set<String> authorities = principal.getAuthorities().stream().map(GrantedAuthority::getAuthority)
+                            .collect(Collectors.toSet());
+                    context.getClaims().claim("authorities", authorities);
+                }
             }
 
             if (OidcParameterNames.ID_TOKEN.equals(context.getTokenType().getValue())) {
